@@ -185,115 +185,96 @@ routes.get("/getFilteredInvoices", async(req, res) => {
 
 routes.get("/getInvoiceByNo", async(req, res) => {
   try {
-      const attr = [
-        'name', 'address1', 'address1', 'person1', 'mobile1',
-        'person2', 'mobile2', 'telephone1', 'telephone2', 'infoMail'
-      ];
-      const resultOne = await Invoice.findOne({
-        where:{invoice_No:req.headers.invoiceno.toUpperCase()},
-        include:[
-          { model:Charge_Head },
-          {
-            model:SE_Job,
-            attributes:[
-              'jobNo', 'jobDate', 'shipDate', 'pol', 'pod', 'fd', 'vol', 
-              'weight', 'pcs', 'flightNo', 'cwtClient', 'cwtLine', 'eta',
-              'etd', 'arrivalDate', 'departureDate'
-            ],
-            //attributes:['id'],
-            include:[
-              { model:SE_Equipments , attributes:['qty', 'size'] },
-              { 
-                model:Bl , attributes:['mbl', 'hbl'],
-                include:[{model:Container_Info, attributes:['no']}]
-              },
-              { model:Voyage , attributes:['voyage', 'importArrivalDate', 'exportSailDate'] },
-              { model:Clients, attributes:attr },
-              { model:Clients, as:'consignee', attributes:attr },
-              { model:Clients, as:'shipper', attributes:attr },
-              { model:Vendors, as:'shipping_line', attributes:attr },
-              { model:Employees, as:'sales_representator', attributes:['name'] },
-              { model:Vessel, as:'vessel', attributes:['carrier', 'name'] },
-              { model:Vendors, as:'air_line', attributes:['name'] },
-              { model:Commodity, as:'commodity', attributes:['name'] },
-              //{ model:Voyage },
-            ]
-          },
-        ],
-        order: [
-          [{ model: Charge_Head }, 'id', 'ASC'],
-        ]
-      }).catch((x)=>console.log(x))
-      res.json({status:'success', result:{ resultOne }});
-    }
-    catch (error) {
-      res.json({status:'error', result:error});
-    }
+    const attr = [
+      'name', 'address1', 'address1', 'person1', 'mobile1',
+      'person2', 'mobile2', 'telephone1', 'telephone2', 'infoMail'
+    ];
+    const resultOne = await Invoice.findOne({
+      where:{invoice_No:req.headers.invoiceno.toUpperCase()},
+      include:[
+        { model:Charge_Head },
+        {
+          model:SE_Job,
+          attributes:[
+            'jobNo', 'jobDate', 'shipDate', 'pol', 'pod', 'fd', 'vol', 
+            'weight', 'pcs', 'flightNo', 'cwtClient', 'cwtLine', 'eta',
+            'etd', 'arrivalDate', 'departureDate', 'gd', 'terminal',
+            'fileNo', 'subType'
+          ],
+          //attributes:['id'],
+          include:[
+            { model:SE_Equipments , attributes:['qty', 'size'] },
+            { 
+              model:Bl , attributes:['mbl', 'hbl'],
+              include:[{model:Container_Info, attributes:['no']}]
+            },
+            { model:Voyage , attributes:['voyage', 'importArrivalDate', 'exportSailDate'] },
+            { model:Clients, attributes:attr },
+            { model:Clients, as:'consignee', attributes:attr },
+            { model:Clients, as:'shipper', attributes:attr },
+            { model:Vendors, as:'shipping_line', attributes:attr },
+            { model:Employees, as:'sales_representator', attributes:['name'] },
+            { model:Vessel, as:'vessel', attributes:['carrier', 'name'] },
+            { model:Vendors, as:'air_line', attributes:['name'] },
+            { model:Commodity, as:'commodity', attributes:['name'] },
+            //{ model:Voyage },
+          ]
+        },
+      ],
+      order: [
+        [{ model: Charge_Head }, 'id', 'ASC'],
+      ]
+    }).catch((x)=>console.log(x))
+    res.json({status:'success', result:{ resultOne }});
+  }
+  catch (error) {
+    res.json({status:'error', result:error});
+  }
 });
 
 routes.get("/getInvoiceById", async(req, res) => {
   try {
-      const attr = [
-        'name', 'address1', 'address1', 'person1', 'mobile1',
-        'person2', 'mobile2', 'telephone1', 'telephone2', 'infoMail'
-      ];
-      const resultOne = await Invoice.findOne({
-        where:{id:{ [Op.eq]: req.headers.invoiceid }},
-        include:[
-          { model:Charge_Head },
-          {
-            model:SE_Job,
-            attributes:[
-              'jobNo', 'jobDate', 'shipDate', 'pol', 'pod', 'fd', 'vol', 'weight', 'pcs', 'flightNo', 'cwtClient', 'cwtLine', 'departureDate'
-            ],
-            //attributes:['id'],
-            include:[
-              { model:SE_Equipments , attributes:['qty', 'size'] },
-              { 
-                model:Bl , attributes:['mbl', 'hbl'],
-                include:[{model:Container_Info, attributes:['no']}]
-              },
-              { model:Voyage , attributes:['voyage', 'importArrivalDate', 'exportSailDate'] },
-              { model:Clients, attributes:attr },
-              { model:Clients, as:'consignee', attributes:attr },
-              { model:Clients, as:'shipper', attributes:attr },
-              { model:Vendors, as:'shipping_line', attributes:attr },
-              { model:Employees, as:'sales_representator', attributes:['name'] },
-              { model:Vessel, as:'vessel', attributes:['carrier', 'name'] },
-              { model:Vendors, as:'air_line', attributes:['name'] },
-              //{ model:Voyage },
-            ]
-          },
-        ],
-        order: [
-          [{ model: Charge_Head }, 'id', 'ASC'],
-        ]
-      }).catch((x)=>console.log(x))
-      res.json({status:'success', result:{ resultOne }});
-    }
-    catch (error) {
-      res.json({status:'error', result:error});
-      console.log(error)
-    }
-});
-
-routes.get("/testResetSomeInvoices", async(req, res) => {
-  try {
-
-    const result = await Invoice.findAll({
-      where:{
-        id:[
-          '965107244473122817', '965107244473253889', '965107244473286657', '965107244473319425', '965107244473450497', '965107244473483265', '965107244473516033', '965107244473548801', '965107244473581569', '965107244473614337', 965107244473909249,
-          '965107244471975937', '965107244472008705', '965107244472172545', '965107244472500225', '965107244472532993', '965107244472565761', '965107244472598529', '965107244472631297', '965107244472827905', '965107244472991745',
-          '965107244471353345', '965107244471418881', '965107244471451649', '965107244471484417', '965107244471615489', '965107244471648257', '965107244471713793', '965107244471844865', '965107244471877633', '965107244472041473'
-        ]
-      }
-    });
-
-    res.json({ status:'success', result:result });
-  } catch (error) {
-
+    const attr = [
+      'name', 'address1', 'address1', 'person1', 'mobile1',
+      'person2', 'mobile2', 'telephone1', 'telephone2', 'infoMail'
+    ];
+    const resultOne = await Invoice.findOne({
+      where:{id:{ [Op.eq]: req.headers.invoiceid }},
+      include:[
+        { model:Charge_Head },
+        {
+          model:SE_Job,
+          attributes:[
+            'jobNo', 'jobDate', 'shipDate', 'pol', 'pod', 'fd', 'vol', 'weight', 'pcs', 'flightNo', 'cwtClient', 'cwtLine', 'departureDate'
+          ],
+          //attributes:['id'],
+          include:[
+            { model:SE_Equipments , attributes:['qty', 'size'] },
+            { 
+              model:Bl , attributes:['mbl', 'hbl'],
+              include:[{model:Container_Info, attributes:['no']}]
+            },
+            { model:Voyage , attributes:['voyage', 'importArrivalDate', 'exportSailDate'] },
+            { model:Clients, attributes:attr },
+            { model:Clients, as:'consignee', attributes:attr },
+            { model:Clients, as:'shipper', attributes:attr },
+            { model:Vendors, as:'shipping_line', attributes:attr },
+            { model:Employees, as:'sales_representator', attributes:['name'] },
+            { model:Vessel, as:'vessel', attributes:['carrier', 'name'] },
+            { model:Vendors, as:'air_line', attributes:['name'] },
+            //{ model:Voyage },
+          ]
+        },
+      ],
+      order: [
+        [{ model: Charge_Head }, 'id', 'ASC'],
+      ]
+    }).catch((x)=>console.log(x))
+    res.json({status:'success', result:{ resultOne }});
+  }
+  catch (error) {
     res.json({status:'error', result:error});
+    console.log(error)
   }
 });
 
@@ -498,26 +479,6 @@ routes.get("/getAllOldInoivcesByPartyId", async(req, res) => {
     catch (error) {
       res.json({status:'error', result:error});
     }
-});
-
-routes.get("/dateExperiment", async(req, res) => {
-  try {
-    const from = moment("2023-02-23");
-    const to = moment("2023-02-25");
-    const resultOne = await Invoice.findAll({
-      where:{
-        createdAt: {
-          [Op.gte]: from.toDate(),
-          [Op.lte]: to.toDate(),
-          }
-      },
-      order: [[ 'createdAt', 'ASC' ]]
-    });
-    res.json({status:'success', result:{ resultOne }});
-    }
-  catch (error) {
-    res.json({status:'error', result:error});
-  }
 });
 
 routes.get("/getTransaction", async(req, res) => {
