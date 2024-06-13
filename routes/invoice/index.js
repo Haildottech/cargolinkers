@@ -803,7 +803,7 @@ routes.get("/jobBalancing", async (req, res) => {
     if(req.headers.company=='4'){
       invoiceObj = {
         ...invoiceObj,
-        [Op.or]: [{companyId: '1'}, {companyId:'3'}]
+        [Op.or]: [{companyId: '1'}, {companyId:'2'}]
       }
     } else {
       req.headers.company?invoiceObj.companyId=req.headers.company:null;
@@ -957,7 +957,7 @@ routes.get("/getClientsWithACPayble", async (req, res) => {
         model:Client_Associations,
         include:[{
           model:Parent_Account,
-          where:{CompanyId:'1'}
+          where:{CompanyId:'2'}
         }]
       }]
     })

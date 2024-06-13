@@ -125,7 +125,7 @@ routes.get("/getVendorById", async(req, res) => {
                 model:Vendor_Associations,
                 attributes:['id'],
                 include:[{
-                    where:{CompanyId:1},
+                    where:{CompanyId:2},
                     attributes:['id', 'title'],
                     model:Parent_Account,
                     include:[{

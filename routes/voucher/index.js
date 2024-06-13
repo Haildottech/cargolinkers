@@ -113,11 +113,7 @@ routes.post("/voucherCreation", async (req, res) => {
     const result = await Vouchers.create({
       ...req.body,
       voucher_No: check == null ? 1 : parseInt(check.voucher_No) + 1,
-      voucher_Id: `${req.body.CompanyId == 1 ?
-          "SNS" :
-          req.body.CompanyId == 2 ?
-            "CLS" : "ACS"
-        }-${req.body.vType}-${check == null ? 1 : parseInt(check.voucher_No) + 1
+      voucher_Id: `${"CLS"}-${req.body.vType}-${check == null ? 1 : parseInt(check.voucher_No) + 1
         }/${moment().format("YY")}`,
 
     }).catch((x) => console.log(x))
@@ -402,7 +398,7 @@ routes.post("/getChildAccountIds", async (req, res) => {
       attributes: ['id', 'title'],
       include: [{
         model: Parent_Account,
-        where: { CompanyId: 3 },
+        where: { CompanyId: 2 },
         attributes: ['CompanyId', 'title']
       }]
     });
@@ -446,7 +442,7 @@ routes.post("/getChildAccountIds", async (req, res) => {
       attributes: ['id', 'title'],
       include: [{
         model: Parent_Account,
-        where: { CompanyId: 3 },
+        where: { CompanyId: 2 },
         attributes: ['CompanyId', 'title']
       }]
     });

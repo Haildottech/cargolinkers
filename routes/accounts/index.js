@@ -298,7 +298,7 @@ routes.get("/getAllChilds", async(req, res) => {
 
 routes.get("/getSEJobChilds", async(req, res) => {
   try {
-
+    console.log(req.headers.title)
     const result = await Child_Account.findAll({
       attributes:["title", "id"],
       where:{title:JSON.parse(req.headers.title)},
@@ -813,7 +813,7 @@ routes.post("/deleteInvoices", async(req, res) => {
   try {
     const result = await Invoice.destroy({
       where:{
-        companyId:'3',
+        companyId:'2',
         currency:"USD"
       }
     })
@@ -878,7 +878,7 @@ routes.post("/createOpeningBalances", async(req, res) => {
     ...req.body,
     CompanyId:req.body.companyId,
     voucher_No: check == null ? 1 : parseInt(check.voucher_No) + 1,
-    voucher_Id:`${req.body.companyId==1?"IFA":"CLS"}-${req.body.vType}-${check==null?1:parseInt(check.voucher_No)+1}/${moment().format("YY")}`,
+    voucher_Id:`${"CLS"}-${req.body.vType}-${check==null?1:parseInt(check.voucher_No)+1}/${moment().format("YY")}`,
     });
     let dataz = await setVoucherHeads(result.id, req.body.Voucher_Heads);
     await Voucher_Heads.bulkCreate(dataz);
@@ -908,7 +908,7 @@ routes.get("/getPartySetupAccounts", async(req, res) => {
   try {
     const parentAccounts = await Parent_Account.findAll({
       attributes:['id', 'title'],
-      where:{ [Op.or]: [{AccountId: '3'}, {AccountId:'4'}], CompanyId:1},
+      where:{ [Op.or]: [{AccountId: '3'}, {AccountId:'4'}], CompanyId:2},
       include:[{
         model:Child_Account,
         attributes:['id', 'title']

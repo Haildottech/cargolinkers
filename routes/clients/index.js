@@ -53,12 +53,11 @@ routes.post("/createClient", async(req, res) => {
             attributes:['code'],
             order: [ [ 'createdAt', 'DESC' ]]
         });
-        console.log(check)
+        console.log(req.body.pAccountName)
         value.accountRepresentatorId = value.accountRepresentatorId==""?null:value.accountRepresentatorId;
         value.salesRepresentatorId = value.salesRepresentatorId==""?null:value.salesRepresentatorId;
         value.docRepresentatorId = value.docRepresentatorId==""?null:value.docRepresentatorId;
         value.authorizedById = value.authorizedById==""?null:value.authorizedById;
-        console.log(check)
         const result = await Clients.create({...value, code :check? parseInt(check.code) + 1:1 }).catch((x)=>console.log(x))
         const accounts = await Parent_Account.findAll({
             where: {
@@ -142,17 +141,18 @@ routes.post("/editClient", async(req, res) => {
         value.types = value.types.join(', ');
 
         await Clients.update({...value, code: parseInt(value.code)},{where:{id:value.id}});
-
+        console.log(req.body.pAccountName)
         const pAccountList = await Parent_Account.findAll({
-            where:{title:req.body.pAccountName}
+          where:{title:req.body.pAccountName}
         })
         const clientAssociation = await Client_Associations.findAll({
-            where:{ClientId:value.id},
+          where:{ClientId:value.id},
         });
         clientAssociation.forEach(async(x)=>{
-            ids.push(x.ChildAccountId);
-            let tempChildId = pAccountList.find((y)=>y.CompanyId==x.CompanyId).id
-            await Client_Associations.update({ParentAccountId:tempChildId}, {where:{id:x.id}})
+          ids.push(x.ChildAccountId);
+          console.log(pAccountList, 'Here');
+          let tempChildId = pAccountList.find((y)=>y.CompanyId==x.CompanyId)?.id
+          await Client_Associations.update({ParentAccountId:tempChildId}, {where:{id:x.id}})
         });
         await Child_Account.update({ title:value.name }, { where:{ id:ids } });
         res.json({status:'success'});
@@ -184,7 +184,7 @@ routes.get("/getClientById", async(req, res) => {
                 model:Client_Associations,
                 attributes:['id'],
                 include:[{
-                    where:{CompanyId:1},
+                    where:{CompanyId:2},
                     attributes:['id', 'title'],
                     model:Parent_Account,
                     include:[{
