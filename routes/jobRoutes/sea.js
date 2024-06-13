@@ -247,31 +247,30 @@ routes.post("/create", async(req, res) => {
 });
 
 routes.post("/edit", async(req, res) => {
-    const createEquip = (list, id) => {
-        let result = [];
-        list.forEach((x)=>{
-            if(x.size!=''&&x.qty!='', x.dg!='', x.teu!=''){
-                delete x.id
-                result.push({...x, SEJobId:id, teu:`${x.teu}`})
-            }
-        })
-        return result;
-    }
-    try {
-        let data = req.body.data
-        console.log(data.pol, "Here")
-        data.customCheck = data.customCheck.toString();
-        data.transportCheck = data.transportCheck.toString();
-        data.approved = data.approved.toString();
-        await SE_Job.update(data,{where:{id:data.id}}).catch((x)=>console.log(1));
-        await SE_Equipments.destroy({where:{SEJobId:data.id}}).catch((x)=>console.log(2))
-        await SE_Equipments.bulkCreate(createEquip(data.equipments, data.id)).catch((x)=>console.log(x))
-        res.json({status:'success', result:await getJob(data.id)});
-    }  
-    catch (error) {
-        console.log(error.message)
-      res.json({status:'error', result:error.message});
-    }
+  const createEquip = (list, id) => {
+    let result = [];
+    list.forEach((x)=>{
+      if(x.size!=''&&x.qty!='', x.dg!='', x.teu!=''){
+        delete x.id
+        result.push({...x, SEJobId:id, teu:`${x.teu}`})
+      }
+    })
+    return result;
+  }
+  try {
+    let data = req.body.data;
+    data.customCheck = data.customCheck.toString();
+    data.transportCheck = data.transportCheck.toString();
+    data.approved = data.approved.toString();
+    await SE_Job.update(data,{where:{id:data.id}}).catch((x)=>console.log(1));
+    await SE_Equipments.destroy({where:{SEJobId:data.id}}).catch((x)=>console.log(2))
+    await SE_Equipments.bulkCreate(createEquip(data.equipments, data.id)).catch((x)=>console.log(x))
+    res.json({status:'success', result:await getJob(data.id)});
+  }  
+  catch (error) {
+    console.log(error)
+    res.json({status:'error', result:error.message});
+  }
 });
 
 routes.get("/get", async(req, res) => {
@@ -282,14 +281,21 @@ routes.get("/get", async(req, res) => {
         operation:req.headers.operation
       },
       include:[
-        //{model:Voyage},
-        {model:Employees, as:'created_by', attributes:['name'] },
-        //{model:SE_Equipments},
+        {
+          model:Employees, 
+          as:'created_by', 
+          attributes:['name'] 
+        },
+        {
+          model:SE_Equipments,
+          attributes:['container']
+        },
         {
           model:Clients,
           attributes:['name']
         }
       ],
+      attributes:['id','operation', 'jobNo', 'gd', 'pol', 'pod', 'fd', 'weight', 'pcs', 'pkgUnit', 'transportCheck', 'customerRef', 'approved', 'operation'],
       order:[["createdAt", "DESC"]],
     }).catch((x)=>console.log(x))
     res.json({status:'success', result:result});
@@ -396,127 +402,6 @@ routes.get("/getJobsWithoutBl", async(req, res) => {
   }
 });
 
-routes.post("/createBl", async(req, res) => {
-  try {
-    let data = req.body;
-    delete data.id
-    let obj = {
-      pkgUnit:data.unit, 
-      pcs:data.pkgs, 
-      weightUnit:data.wtUnit, 
-      vol:data.cbm, 
-      shpVol:data.cbm,
-      weight:data.gross,
-      cwtClient:data.chargableWt
-    }
-    if(data.operation=="SI" || data.operation=="AI" || data.operation=="SE"){
-      // console.log("Here")
-      await SE_Job.update({
-        ...obj
-      }, {where:{id:data.SEJobId}});
-    }
-    const check = await Bl.findOne({order: [['no', 'DESC']], attributes:["no"] })
-    const result = await Bl.create({...data, 
-      no:check==null?1:parseInt(check.no)+1, 
-      // hbl:data.operation=="SE"?`SNSL${ check==null?1:parseInt(check.no)+1 }`:data.hbl
-    }).catch((x)=>console.log(x))
-    // Creating Items for AE
-    if(data.Item_Details.length>0){
-      let tempItems = [];
-      data.Item_Details.forEach((x)=>{
-        x.id==null?delete x.id:null;
-        tempItems.push({...x, BlId:result.id})
-      })
-      await Item_Details.bulkCreate(tempItems)
-    }
-    await data.Container_Infos.forEach((x, i)=>{
-      data.Container_Infos[i] = {...x, BlId:result.id}
-    })
-    await Container_Info.bulkCreate(data.Container_Infos).catch((x)=>console.log(x))
-    if(data.Dimensions.length>0){
-      data.Dimensions.forEach((x, i)=>{
-        x.id==null?delete x.id:null;
-        data.Dimensions[i] = {...x, BlId:result.id}
-      })
-      await Dimensions.bulkCreate(data.Dimensions).catch((x)=>console.log(x))
-    }
-    res.json({status:'success', result:result.id  });
-  }
-  catch (error) {
-    res.json({status:'error', result:error});
-  }
-});
-
-routes.post("/editBl", async(req, res) => {
-  try {
-    let data = req.body;
-    let obj = {
-      pkgUnit:data.unit, 
-      pcs:data.pkgs, 
-      weightUnit:data.wtUnit, 
-      vol:data.cbm, 
-      shpVol:data.cbm,
-      weight:data.gross,
-      cwtClient:data.chargableWt
-    };
-    if(data.operation=="SI" || data.operation=="AI" || data.operation=="SE"){
-      await SE_Job.update({
-        ...obj
-      }, {where:{id:data.SEJobId}});
-    };
-    await Bl.update(data, {where:{id:data.id}});
-    data.Container_Infos.forEach((x, i)=>{
-      data.Container_Infos[i] = {
-        ...x, BlId:data.id, 
-        pkgs:x.pkgs.toString(),
-        gross:x.gross.toString(),
-        net:x.net.toString(),
-        tare:x.tare.toString(),
-        cbm:x.cbm?.toString(),
-      }
-    });
-    const result = await Container_Info.bulkCreate(data.Container_Infos,{
-      updateOnDuplicate: [
-        "pkgs", "no", "seal", "size", "rategroup", "gross", "net", "tare", "wtUnit", "cbm", "pkgs", "unit", "temp", "loadType", "remarks", "detention",  "demurge", "plugin", "dg", "number", "date", "top", "right", "left", "front", "back"
-      ],
-    });
-    // Creating Items for AE
-    if(data.Item_Details.length>0){
-      let tempItems = [];
-      data.Item_Details.forEach((x)=>{
-        x.id==null?delete x.id:null;
-        tempItems.push({...x, BlId:req.body.id})
-      })
-      await Item_Details.bulkCreate(tempItems,{
-        updateOnDuplicate: [
-          "noOfPcs", "unit", "grossWt", "kh_lb", "r_class", "itemNo", "chargableWt", "rate_charge", "total", "lineWeight"
-        ],
-      })
-    };
-    if(data.Dimensions.length>0){
-      let tempItems = [];
-      data.Dimensions.forEach((x)=>{
-        x.id==null?delete x.id:null;
-        tempItems.push({...x, BlId:req.body.id})
-      })
-      await Dimensions.bulkCreate(tempItems,{
-        updateOnDuplicate: [
-          "length", "width", "height", "qty", "vol", "weight"
-        ],
-      })//.catch((x)=>console.log(x.message))
-    };
-    await Stamps.destroy({ where:{id:data.deleteArr} });
-    await Container_Info.destroy({ where:{id:req.body.deletingContinersList} });
-    await Item_Details.destroy({ where:{id:req.body.deletingItemList} });
-    await Dimensions.destroy({ where:{id:req.body.deletingDimensionsList} });
-    await data.stamps?.map((x) => Stamps.upsert({...x, BlId:req.body.id}));
-    res.json({status:'success', result: result});   
-  } 
-  catch (error) {
-    res.json({status:'error', result:error});  
-  } 
-}); 
-
 routes.post("/findJobByNo", async(req, res) => {
   try {
     const attr = [
@@ -553,54 +438,6 @@ routes.post("/findJobByNo", async(req, res) => {
     res.json({status:'error', result:error});
   }
 });
-
-routes.get("/getAllBls", async(req, res) => {
-    try {
-      const result = await Bl.findAll({
-        include:[
-          { model:SE_Job, attributes:["jobNo"] },
-          { model:Container_Info }
-        ]
-      });
-      res.json({status:'success', result:result});
-    }
-    catch (error) {
-      res.json({status:'error', result:error});
-    }
-});
-
-routes.get("/getBlById", async(req, res) => {
-  try {
-    const result = await Bl.findOne({
-      where:{id:req.headers.id},
-      include:[
-        {
-          model:SE_Job,
-          attributes:["jobNo"]
-        },
-        {model: Stamps},
-        {model: Container_Info},
-        {model: Item_Details},
-        {model: Dimensions},
-    ]});
-    res.json({status:'success', result:result});
-  }
-  catch (error) {
-    res.json({status:'error', result:error});
-  }
-});
-
-routes.get("/getStamps", async(req, res) => {
-  try {
-    const result = await Stamps.findAll({
-        where:{BlId:req.headers.id},
-    });
-    res.json({status:'success', result:result});
-  }
-  catch (error) {
-    res.json({status:'error', result:error});
-  }
-}); 
 
 routes.post("/deleteJob", async(req, res) => {
   try {
