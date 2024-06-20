@@ -29,8 +29,6 @@ module.exports = (sequelize, DataTypes) => {
     partyType:{ type:DataTypes.STRING },
     chargeDate:{ type:DataTypes.DATE },
   },
-  {
-    timestamps: false
-  })
+  { timestamps: false })
   return Charge_Head;
 }
