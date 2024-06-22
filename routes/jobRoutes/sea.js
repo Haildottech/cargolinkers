@@ -191,6 +191,18 @@ routes.post('/updateNotes', async(req, res) => {
   }
 });
 
+routes.post('/editNotes', async(req, res) => {
+  try {
+    req.body.notes.forEach((x)=>{
+      Job_notes.upsert(x)
+    })
+    res.json({ status: "success"})
+  }
+  catch (err) {
+    res.json({ status: "error", result:err.message})
+  }
+});
+
 routes.post("/addNote", async(req, res) => {
   try {
       const result = await Job_notes.create(req.body);
@@ -259,6 +271,7 @@ routes.post("/edit", async(req, res) => {
   }
   try {
     let data = req.body.data;
+    console.log(data.gross)
     data.customCheck = data.customCheck.toString();
     data.transportCheck = data.transportCheck.toString();
     data.approved = data.approved.toString();
