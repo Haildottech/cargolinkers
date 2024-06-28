@@ -248,7 +248,7 @@ routes.post("/create", async(req, res) => {
     const result = await SE_Job.create({
       ...data,
       jobId:check==null?1:parseInt(check.jobId)+1,
-      jobNo:`CL-${data.operation.slice(1)}-${check==null?1:parseInt(check.jobId)+1}/${moment().format("M")}/${moment().format("YY")}`
+      jobNo:`CL-${data.operation.slice(1)}-${moment().format("YY")}/${moment().format("M")}/${check==null?1:parseInt(check.jobId)+1}`
     }).catch((x)=>console.log(x))
     await SE_Equipments.bulkCreate(createEquip(data.equipments,  result.id)).catch((x)=>console.log(x))
     res.json({status:'success', result:await getJob(result.id)});
@@ -308,7 +308,7 @@ routes.get("/get", async(req, res) => {
           attributes:['name']
         }
       ],
-      attributes:['id','operation', 'jobNo', 'gd', 'pol', 'pod', 'fd', 'weight', 'pcs', 'pkgUnit', 'transportCheck', 'customerRef', 'approved', 'operation'],
+      attributes:['id','operation', 'jobNo', 'gd', 'pol', 'pod', 'fd', 'weight', 'pcs', 'pkgUnit', 'transportCheck', 'customerRef', 'approved', 'operation','jobKind'],
       order:[["createdAt", "DESC"]],
     }).catch((x)=>console.log(x))
     res.json({status:'success', result:result});
