@@ -259,25 +259,25 @@ routes.post("/create", async(req, res) => {
 });
 
 routes.post("/edit", async(req, res) => {
+
   const createEquip = (list, id) => {
     let result = [];
     list.forEach((x)=>{
-      if(x.size!=''&&x.qty!='', x.dg!='', x.teu!=''){
+      if(x){
         delete x.id
-        result.push({...x, SEJobId:id, teu:`${x.teu}`})
+        result.push({...x, SEJobId:id})
       }
     })
     return result;
   }
   try {
     let data = req.body.data;
-    console.log(data.gross)
     data.customCheck = data.customCheck.toString();
     data.transportCheck = data.transportCheck.toString();
     data.approved = data.approved.toString();
-    await SE_Job.update(data,{where:{id:data.id}}).catch((x)=>console.log(1));
+    const sejob = await SE_Job.update(data,{where:{id:data.id}}).catch((x)=>console.log(1));
     await SE_Equipments.destroy({where:{SEJobId:data.id}}).catch((x)=>console.log(2))
-    await SE_Equipments.bulkCreate(createEquip(data.equipments, data.id)).catch((x)=>console.log(x))
+    const bulk = await SE_Equipments.bulkCreate(createEquip(data.equipments,data.id)).catch((x)=>console.log(x))
     res.json({status:'success', result:await getJob(data.id)});
   }  
   catch (error) {
