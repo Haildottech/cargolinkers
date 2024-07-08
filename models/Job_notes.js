@@ -17,16 +17,12 @@ module.exports = (sequelize, DataTypes) => {
         title:{
             type:DataTypes.STRING,
             allowNull: false,
-            validate:{
-                notEmpty: true
-            }
+
         },
         note:{
             type:DataTypes.TEXT,
             allowNull: false,
-            validate:{
-                notEmpty: true
-            }
+            
         },
         createdBy:{
             type:DataTypes.STRING,
