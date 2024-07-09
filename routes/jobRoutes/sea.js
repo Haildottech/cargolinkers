@@ -218,9 +218,9 @@ routes.post("/create", async(req, res) => {
   const createEquip = (list, id) => {
     let result = [];
     list.forEach((x) => {
-      if(x.size!=''&&x.qty!='', x.dg!='', x.teu!=''){
+      if(x){
         delete x.id
-        result.push({...x, SEJobId:id, teu:`${x.teu}`})
+        result.push({...x, SEJobId:id})
       }
     })
     return result;
