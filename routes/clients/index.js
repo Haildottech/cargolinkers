@@ -166,7 +166,7 @@ routes.get("/getClients", async(req, res) => {
     try {
         const result = await Clients.findAll({
             where:{[Op.and]:[{nongl:{[Op.eq]:null}}]},
-            attributes:['id', 'name' , 'person1', 'mobile1', 'person2', 'mobile2', 'telephone1', 'telephone2', 'address1', 'address2', 'createdBy', 'code'],
+            attributes:['id', 'name' ,'ntn', 'person1', 'mobile1', 'person2', 'mobile2', 'telephone1', 'telephone2', 'address1', 'address2', 'createdBy', 'code'],
             order: [['createdAt', 'DESC'], /* ['name', 'ASC'],*/] 
         });
         res.json({status:'success', result:result});

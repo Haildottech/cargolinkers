@@ -187,7 +187,7 @@ routes.get("/getInvoiceByNo", async(req, res) => {
   try {
     const attr = [
       'name', 'address1', 'address1', 'person1', 'mobile1',
-      'person2', 'mobile2', 'telephone1', 'telephone2', 'infoMail'
+      'person2', 'mobile2', 'telephone1', 'telephone2', 'infoMail','ntn'
     ];
     const resultOne = await Invoice.findOne({
       where:{invoice_No:req.headers.invoiceno.toUpperCase()},
@@ -199,7 +199,7 @@ routes.get("/getInvoiceByNo", async(req, res) => {
             'jobNo', 'jobDate', 'shipDate', 'pol', 'pod', 'fd', 'vol', 
             'weight', 'pcs', 'flightNo', 'cwtClient', 'cwtLine', 'eta',
             'etd', 'arrivalDate', 'departureDate', 'gd', 'terminal',
-            'fileNo', 'subType'
+            'fileNo', 'subType','customerRef','gd'
           ],
           //attributes:['id'],
           include:[
@@ -236,7 +236,7 @@ routes.get("/getInvoiceById", async(req, res) => {
   try {
     const attr = [
       'name', 'address1', 'address1', 'person1', 'mobile1',
-      'person2', 'mobile2', 'telephone1', 'telephone2', 'infoMail'
+      'person2', 'mobile2', 'telephone1', 'telephone2', 'infoMail','ntn'
     ];
     const resultOne = await Invoice.findOne({
       where:{id:{ [Op.eq]: req.headers.invoiceid }},
@@ -246,6 +246,7 @@ routes.get("/getInvoiceById", async(req, res) => {
           model:SE_Job,
           attributes:[
             'jobNo', 'jobDate', 'shipDate', 'pol', 'pod', 'fd', 'vol', 'weight', 'pcs', 'flightNo', 'cwtClient', 'cwtLine', 'departureDate'
+         ,'customerRef','gd'
           ],
           //attributes:['id'],
           include:[
