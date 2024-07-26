@@ -241,10 +241,20 @@ routes.post("/create", async(req, res) => {
     data.vesselId?
       null:
       data.vesselId = null
+
+      result = await SE_Job.findOne({
+        where: {
+                  customerRef:req.body.data.customerRef
+                      }
+    })
+    if(result){
+      res.json({status:'exists'});
+    }else{
     const check = await SE_Job.findOne({
       order:[['jobId','DESC']], attributes:["jobId"],
       where:{operation:data.operation, companyId:data.companyId}
     });
+
     const result = await SE_Job.create({
       ...data,
       jobId:check==null?1:parseInt(check.jobId)+1,
@@ -253,6 +263,7 @@ routes.post("/create", async(req, res) => {
     await SE_Equipments.bulkCreate(createEquip(data.equipments,  result.id)).catch((x)=>console.log(x))
     res.json({status:'success', result:await getJob(result.id)});
   }
+}
   catch (error) {
     res.json({status:'error', result:error});
   }
@@ -262,6 +273,7 @@ routes.post("/edit", async(req, res) => {
 
   const createEquip = (list, id) => {
     let result = [];
+
     list.forEach((x)=>{
       if(x){
         delete x.id
@@ -275,11 +287,30 @@ routes.post("/edit", async(req, res) => {
     data.customCheck = data.customCheck.toString();
     data.transportCheck = data.transportCheck.toString();
     data.approved = data.approved.toString();
+    const existingJob  = await SE_Job.findOne({
+      where: {
+        [Op.and]: [
+          { customerRef: data.customerRef },
+          { id: data.id }
+                 ]
+    }
+  });
+   // Check if customerRef has changed
+   if (existingJob === null) {
+    result = await SE_Job.findOne({
+      where: {
+                customerRef:data.customerRef
+   }
+  })
+  if(result){
+    res.json({status:'exists'});
+  }  }else{
     const sejob = await SE_Job.update(data,{where:{id:data.id}}).catch((x)=>console.log(1));
     await SE_Equipments.destroy({where:{SEJobId:data.id}}).catch((x)=>console.log(2))
     const bulk = await SE_Equipments.bulkCreate(createEquip(data.equipments,data.id)).catch((x)=>console.log(x))
     res.json({status:'success', result:await getJob(data.id)});
-  }  
+  }
+}
   catch (error) {
     console.log(error)
     res.json({status:'error', result:error.message});
