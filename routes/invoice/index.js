@@ -95,6 +95,31 @@ routes.post("/updateCharges", async(req, res) => {
   }
 }); 
 
+routes.post("/updatePrint", async (req, res) => {
+  try {
+    console.log(req.body)
+    console.log("BIlal")
+    const { id, isPrinted, GSTPrinted } = req.body; // Destructure relevant fields
+
+    // Validate incoming data (optional but recommended)
+    if (typeof id !== 'number' || typeof isPrinted !== 'boolean' || typeof GSTPrinted !== 'boolean') {
+      return res.json({ status: 'error', message: 'Invalid data types for id, isPrinted, or GSTPrinted' });
+    }
+
+    // Update specific fields based on request
+    await Invoice.update(
+      { isPrinted, GSTPrinted },
+      { where: { id } } // Use the provided id for filtering
+    );
+
+    res.json({ status: 'success' }); // Respond with success message
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    res.json({ status: 'error', result: error.message || 'Error updating print status' }); // Provide informative error message
+  }
+});
+
+
 routes.post("/saveHeades", async(req, res) => {
 
   const makeHeads = (data, id) => {
