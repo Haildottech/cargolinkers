@@ -97,19 +97,10 @@ routes.post("/updateCharges", async(req, res) => {
 
 routes.post("/updatePrint", async (req, res) => {
   try {
-    console.log(req.body)
-    console.log("BIlal")
-    const { id, isPrinted, GSTPrinted } = req.body; // Destructure relevant fields
-
-    // Validate incoming data (optional but recommended)
-    if (typeof id !== 'number' || typeof isPrinted !== 'boolean' || typeof GSTPrinted !== 'boolean') {
-      return res.json({ status: 'error', message: 'Invalid data types for id, isPrinted, or GSTPrinted' });
-    }
-
     // Update specific fields based on request
     await Invoice.update(
-      { isPrinted, GSTPrinted },
-      { where: { id } } // Use the provided id for filtering
+      { isPrinted:req.body.printed, GSTPrinted:req.body.gstprinted },
+      { where: { invoice_No:req.body.invoice_No } } // Use the provided id for filtering
     );
 
     res.json({ status: 'success' }); // Respond with success message
