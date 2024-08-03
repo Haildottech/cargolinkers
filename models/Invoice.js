@@ -1,3 +1,5 @@
+const { type } = require("express/lib/response");
+
 module.exports = (sequelize, DataTypes) => {
     const Invoice = sequelize.define("Invoice", {
         invoice_No:{
@@ -59,6 +61,14 @@ module.exports = (sequelize, DataTypes) => {
         note:{
             type:DataTypes.TEXT
         },
+        isPrinted:{
+            type:DataTypes.BOOLEAN,
+            defaultValue: false,
+        },
+        GSTPrinted:{
+            type:DataTypes.BOOLEAN,
+            defaultValue: false,
+        }
     })
     return Invoice;
 }
