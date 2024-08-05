@@ -95,6 +95,22 @@ routes.post("/updateCharges", async(req, res) => {
   }
 }); 
 
+routes.post("/updatePrint", async (req, res) => {
+  try {
+    // Update specific fields based on request
+    await Invoice.update(
+      { isPrinted:req.body.printed, GSTPrinted:req.body.gstprinted },
+      { where: { invoice_No:req.body.invoice_No } } // Use the provided id for filtering
+    );
+
+    res.json({ status: 'success' }); // Respond with success message
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    res.json({ status: 'error', result: error.message || 'Error updating print status' }); // Provide informative error message
+  }
+});
+
+
 routes.post("/saveHeades", async(req, res) => {
 
   const makeHeads = (data, id) => {
