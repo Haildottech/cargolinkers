@@ -67,6 +67,7 @@ routes.post("/recordReverse", async (req, res) => {
 
 routes.post("/OfficeVoucherUpsert", async (req, res) => {
   try {
+    console.log(req)
     const result = await Office_Vouchers.upsert(req.body);
     res.json({ status: "success", result: result });
   } catch (error) {
@@ -89,9 +90,10 @@ routes.get("/OfficeVoucherById", async (req, res) => {
 
 routes.get("/OfficeAllVouchers", async (req, res) => {
   try {
+    console.log(req.headers.companyid)
     const result = await Office_Vouchers.findAll({
       attributes: ['id', 'EmployeeId', 'amount', 'requestedBy', 'preparedBy', 'approved', 'paid'],
-      where: { CompanyId: req.headers.companyid },
+      where: { CompanyId: true },
       include: [
         { model: Employees, attributes: ['name'] },
         { model: Vouchers, attributes: ['voucher_Id'] },
