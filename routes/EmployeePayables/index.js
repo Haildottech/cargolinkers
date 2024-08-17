@@ -3,7 +3,7 @@ const Sequelize = require("sequelize");
 const moment = require("moment");
 const { Accounts } = require('../../models/');
 const Op = Sequelize.Op;
-// const { SE_Jobs, Employees, Employee_Payables, Child_Account } = require("../../functions/Associations/employeePayablesAssociations");
+const { SE_Jobs, Employees, Employee_Payables, Child_Account } = require("../../functions/Associations/employeePayablesAssociations");
 
 
 routes.post("/EmployeePayableUpsert", async (req, res) => {
