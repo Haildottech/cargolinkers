@@ -87,16 +87,22 @@ routes.get("/OfficeVoucherById", async (req, res) => {
   }
 });
 
+
+
 routes.get("/OfficeAllVouchers", async (req, res) => {
   try {
+    // console.log(req.headers.companyid)
     const result = await Office_Vouchers.findAll({
-      attributes: ['id', 'EmployeeId', 'amount', 'requestedBy', 'preparedBy', 'approved', 'paid'],
-      where: { CompanyId: req.headers.companyid },
-      include: [
-        { model: Employees, attributes: ['name'] },
-        { model: Vouchers, attributes: ['voucher_Id'] },
-      ]
+      // attributes: ['id', 'EmployeeId', 'amount', 'requestedBy', 'preparedBy', 'approved', 'paid'],
+      // where: { CompanyId: true },
+      // include: [
+      //   { model: Employees, attributes: ['name'] },
+      //   { model: Vouchers, attributes: ['voucher_Id'] },
+    // ]
+    }).then((x) => {
+      console.log(result)
     })
+    
     res.json({ status: "success", result: result });
   } catch (error) {
     res.json({ status: "error", result: error });
@@ -108,7 +114,7 @@ routes.post("/voucherCreation", async (req, res) => {
     const check = await Vouchers.findOne({
       order: [["voucher_No", "DESC"]],
       attributes: ["voucher_No"],
-      where: { vType: req.body.vType, CompanyId: req.body.CompanyId }
+      where: { vType: req.body.vType, CompanyId: true }
     });
     const result = await Vouchers.create({
       ...req.body,

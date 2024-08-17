@@ -285,8 +285,8 @@ routes.get("/getAllChilds", async(req, res) => {
       attributes:["title", "id"],
       include:[{
         model:Parent_Account,
-        where:{CompanyId:req.headers.companyid},
-        attributes:["title"]
+        where:{CompanyId:2},
+        attributes:["title", "AccountId"]
       }]
     });
     res.json({status:'success', result:result});
