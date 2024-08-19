@@ -1,22 +1,35 @@
 const routes = require("express").Router();
 const Sequelize = require("sequelize");
 const moment = require("moment");
-const { Accounts } = require('../../models/');
 const Op = Sequelize.Op;
 const { SE_Jobs, Employees, Employee_Payables, Child_Account } = require("../../functions/Associations/employeePayablesAssociations");
 
 
+// routes.post("/EmployeePayableUpsert", async (req, res) => {
+//     const body = req.body
+//     try {
+//         console.log(body)
+//       const result = await Employee_Payables.upsert(body);
+//       console.log(result)
+//       res.json({ status: "success", result: result });
+//     } catch (error) {
+//       res.json({ status: "error", result: error });
+//     }
+// });
+
 routes.post("/EmployeePayableUpsert", async (req, res) => {
-    console.log(req.body)
-    const body = req.body
+    const body = req.body;
     try {
-      const result = await Employee_Payables.create(body);
-      console.log(result)
-      res.json({ status: "success", result: result });
+        console.log(body);
+        const result = await Employee_Payables.upsert(body);
+        console.log(result);
+        res.json({ status: "success", result: result });
     } catch (error) {
-      res.json({ status: "error", result: error });
+        console.error('Error during upsert:', error);
+        res.json({ status: "error", result: error.message });
     }
 });
+
 
 routes.get("/deleteEmployeePayable", async (req, res)=>{
     try{

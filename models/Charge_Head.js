@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     approval_date:{ type:DataTypes.STRING },
     partyType:{ type:DataTypes.STRING },
     chargeDate:{ type:DataTypes.DATE },
+    refNum:{ type:DataTypes.STRING },
   },
   { timestamps: false })
   return Charge_Head;

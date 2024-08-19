@@ -1,10 +1,10 @@
 const { DataTypes } = require('sequelize');
 const { Employees, SE_Jobs, Employee_Payables, Child_Account } = require("../../../models");
 
-Employee_Payables.belongsTo(Employees, {
-  foreignKey: 'employeeid',
-  as: 'employee'
-});
+// Employee_Payables.belongsTo(Employees, {
+//   foreignKey: 'employeeid',
+//   as: 'employee'
+// });
 
 // Employee_Payables.belongsTo(SE_Jobs, {
 //   foreignKey: 'jobid',
@@ -16,4 +16,5 @@ Employee_Payables.belongsTo(Employees, {
 //   as: 'account'
 // });
 
-module.exports = { SE_Jobs, Employees, Employee_Payables, Child_Account };
+// module.exports = { SE_Jobs, Employees, Employee_Payables, Child_Account };
+module.exports = {Employee_Payables};

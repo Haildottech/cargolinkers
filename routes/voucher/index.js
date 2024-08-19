@@ -93,18 +93,18 @@ routes.get("/OfficeAllVouchers", async (req, res) => {
   try {
     // console.log(req.headers.companyid)
     const result = await Office_Vouchers.findAll({
-      // attributes: ['id', 'EmployeeId', 'amount', 'requestedBy', 'preparedBy', 'approved', 'paid'],
-      // where: { CompanyId: true },
-      // include: [
-      //   { model: Employees, attributes: ['name'] },
-      //   { model: Vouchers, attributes: ['voucher_Id'] },
-    // ]
-    }).then((x) => {
-      console.log(result)
+      attributes: ['id', 'EmployeeId', 'amount', 'requestedBy', 'preparedBy', 'approved', 'paid'],
+      where: { CompanyId: true },
+      include: [
+        { model: Employees, attributes: ['name'] },
+        { model: Vouchers, attributes: ['voucher_Id'] },
+    ]
     })
+    console.log(result)
     
     res.json({ status: "success", result: result });
   } catch (error) {
+    console.log(error)
     res.json({ status: "error", result: error });
   }
 });
