@@ -284,6 +284,7 @@ routes.post("/edit", async(req, res) => {
   }
   try {
     let data = req.body.data;
+    // console.log(data)
     data.customCheck = data.customCheck.toString();
     data.transportCheck = data.transportCheck.toString();
     data.approved = data.approved.toString();
