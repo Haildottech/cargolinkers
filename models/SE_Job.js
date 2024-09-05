@@ -70,6 +70,7 @@ module.exports = (sequelize, DataTypes) => {
     arrivalTime  :{ type:DataTypes.STRING },
     departureDate:{ type:DataTypes.STRING },
     departureTime:{ type:DataTypes.STRING },
+    regPageNo:{ type:DataTypes.STRING },
     gross:{ type:DataTypes.STRING }
   })
   return SE_Job;
